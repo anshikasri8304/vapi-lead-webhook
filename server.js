@@ -45,21 +45,17 @@ async function appendLeadToSheet(row) {
 // raw transcript. We try structured data first, fall back to raw fields.
 function extractLeadData(body) {
   const msg = body.message || body;
-
-  // If you've configured Vapi's "Analysis" / structured data extraction,
-  // it will appear here. Adjust the path below to match your actual payload
-  // once you inspect a real webhook call (see /debug endpoint below).
-  const analysis = msg.analysis?.structuredData || msg.analysis || {};
+  const data = msg.analysis?.structuredData || {};
 
   return {
-    name: analysis.customerName || analysis.name || "",
-    contact: analysis.contactNumber || analysis.phone || "",
-    location: analysis.location || "",
-    propertyType: analysis.propertyType || "",
-    budget: analysis.budget || "",
-    purpose: analysis.purpose || "",
-    timeline: analysis.timeline || "",
-    summary: analysis.summary || msg.summary || "",
+    name: data.customer_name || "",
+    contact: data.contact_number || "",
+    location: data.location_preference || "",
+    propertyType: data.property_type || "",
+    budget: data.budget_range || "",
+    purpose: data.purpose || "",
+    timeline: data.timeline || "",
+    summary: data.call_summary || "",
     callId: msg.call?.id || msg.callId || "",
   };
 }
