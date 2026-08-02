@@ -1,0 +1,15 @@
+{
+  "name": "vapi-lead-webhook",
+  "version": "1.0.0",
+  "description": "Webhook server that receives Vapi call-end events and writes qualified lead data to Google Sheets",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "googleapis": "^140.0.1",
+    "dotenv": "^16.4.5"
+  }
+}
