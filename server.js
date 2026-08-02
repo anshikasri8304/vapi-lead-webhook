@@ -7,6 +7,12 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
+// Keep the most recent webhook payload in memory so it can be viewed
+// easily in a browser at /last-payload (Render's log viewer truncates
+// long lines, so this is a more reliable way to inspect the real
+// structure Vapi sends).
+let lastPayload = null;
+
 // ---- Google Sheets auth (Service Account) ----
 // Uses a service account JSON key (credentials.json) instead of OAuth popup flow.
 // This avoids the "connect / popup blocked" issue entirely.
@@ -61,7 +67,8 @@ function extractLeadData(body) {
 // ---- Main webhook endpoint (point Vapi's Server URL here) ----
 app.post("/webhook", async (req, res) => {
   try {
-    console.log("Incoming webhook:", JSON.stringify(req.body, null, 2));
+    lastPayload = req.body;
+    console.log("Incoming webhook type:", req.body.message?.type);
 
     const eventType = req.body.message?.type;
 
@@ -101,6 +108,15 @@ app.post("/debug", (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("Vapi lead webhook is running.");
+});
+
+// Visit this URL in your browser right after a test call to see the
+// full, unabbreviated JSON payload Vapi sent on call end.
+app.get("/last-payload", (req, res) => {
+  if (!lastPayload) {
+    return res.send("No webhook received yet. Make a test call, then refresh this page.");
+  }
+  res.json(lastPayload);
 });
 
 app.listen(PORT, () => {
